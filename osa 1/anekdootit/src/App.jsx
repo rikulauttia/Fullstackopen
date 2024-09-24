@@ -17,15 +17,24 @@ const App = () => {
   ];
 
   const [selected, setSelected] = useState(0);
+  const [votes, setVotes] = useState(Array(anecdotes.length).fill(0)); //Luotiin taulukko jonka alussa kaikki arvot ovat nollia
 
   const randomAnecdote = () => {
     const randomIndex = Math.floor(Math.random() * anecdotes.length);
     setSelected(randomIndex);
   };
 
+  const voteAnecdote = () => {
+    const copyOfVotes = [...votes];
+    copyOfVotes[selected] += 1;
+    setVotes(copyOfVotes);
+  };
+
   return (
     <div>
       <p>{anecdotes[selected]}</p>
+      <p>has {votes[selected]} votes</p>
+      <Button handleClick={voteAnecdote} text="vote" />
       <Button handleClick={randomAnecdote} text="next anecdote" />
     </div>
   );
