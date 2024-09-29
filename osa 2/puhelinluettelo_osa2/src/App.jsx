@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import Filter from "./components/Filter";
+import Notification from "./components/Notification";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import personsService from "./services/persons";
@@ -10,6 +11,8 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [notificationMessage, setNotificationMessage] = useState(null);
+  const [notificationType, setNotificationType] = useState("success");
 
   useEffect(() => {
     personsService
@@ -39,9 +42,16 @@ const App = () => {
             );
             setNewName("");
             setNewNumber("");
+            setNotificationMessage(`${newName} was updated.`);
+            setNotificationType("success");
+            setTimeout(() => {
+              setNotificationMessage(null);
+            }, 5000);
           })
           .catch((error) => {
             console.error("Error updating person:", error);
+            setNotificationMessage(`Errot updating ${newName}`);
+            setNotificationType("error");
           });
       }
     } else {
@@ -51,6 +61,11 @@ const App = () => {
         setPersons(persons.concat(returnedPerson));
         setNewName("");
         setNewNumber("");
+        setNotificationMessage(`${newName} was added to the phonebook.`);
+        setNotificationType("success");
+        setTimeout(() => {
+          setNotificationMessage(null);
+        }, 5000);
       });
     }
   };
@@ -61,9 +76,16 @@ const App = () => {
         .remove(id)
         .then(() => {
           setPersons(persons.filter((person) => person.id !== id));
+          setNotificationMessage(`${name} was deleted.`);
+          setNotificationType("success");
+          setTimeout(() => {
+            setNotificationMessage(null);
+          }, 5000);
         })
         .catch((error) => {
           console.error("Error deleting person:", error);
+          setNotificationMessage(`Error deleting ${name}`);
+          setNotificationType("error");
         });
     }
   };
@@ -88,6 +110,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMessage} type={notificationType} />
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <h2>Add a new</h2>
       <PersonForm
