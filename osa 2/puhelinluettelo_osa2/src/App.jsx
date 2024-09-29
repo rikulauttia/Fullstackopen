@@ -50,8 +50,14 @@ const App = () => {
           })
           .catch((error) => {
             console.error("Error updating person:", error);
-            setNotificationMessage(`Errot updating ${newName}`);
+            setNotificationMessage(
+              ` ${newName} has already been removed from server`
+            );
             setNotificationType("error");
+            setPersons(persons.filter((person) => person.id !== nameExists.id));
+            setTimeout(() => {
+              setNotificationMessage(null);
+            }, 5000);
           });
       }
     } else {
