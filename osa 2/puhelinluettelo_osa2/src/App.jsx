@@ -19,9 +19,31 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault();
-    const nameExists = persons.some((person) => person.name === newName);
+    const nameExists = persons.find((person) => person.name === newName);
+
     if (nameExists) {
-      alert(`${newName} is already in the phonebook`);
+      const confirmUpdate = window.confirm(
+        `${newName} is already in the phonebook, replace the old number with a new one?`
+      );
+
+      if (confirmUpdate) {
+        const updatedPerson = { ...nameExists, number: newNumber };
+
+        personsService
+          .update(nameExists.id, updatedPerson)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== nameExists.id ? person : returnedPerson
+              )
+            );
+            setNewName("");
+            setNewNumber("");
+          })
+          .catch((error) => {
+            console.error("Error updating person:", error);
+          });
+      }
     } else {
       const newPerson = { name: newName, number: newNumber };
 
