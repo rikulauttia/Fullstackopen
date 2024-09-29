@@ -1,0 +1,24 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+.app-container {
+  max-width: 1000px;
+  margin: auto;
+  text-align: left;
+}
+
+.search-input {
+  padding: 8px;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+p {
+  color: #333;
+  font-size: 16px;
+}
