@@ -54,7 +54,8 @@ const App = () => {
           .catch((error) => {
             console.error("Error updating person:", error);
             setNotificationMessage(
-              `${newName} has already been removed from the server`
+              error.response.data.error ||
+                `${newName} has already been removed from the server`
             );
             setNotificationType("error");
             setPersons(persons.filter((person) => person.id !== nameExists.id));
@@ -79,10 +80,10 @@ const App = () => {
           }, 5000);
         })
         .catch((error) => {
-          console.error("Error adding person:", error);
+          console.log(error.response.data["error"]);
           setNotificationMessage(
             error.response.data.error ||
-              "Error adding person. Please check the inputs."
+              "Error adding person. Check the inputs!"
           );
           setNotificationType("error");
           setTimeout(() => {
