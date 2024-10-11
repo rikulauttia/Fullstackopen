@@ -8,8 +8,8 @@
     "dev": "nodemon index.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Riku Lauttia",
+  "license": "MIT",
   "description": "",
   "dependencies": {
     "cors": "^2.8.5",
