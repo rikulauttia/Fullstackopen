@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import Filter from "./components/Filter";
-import Notification from "./components/Notification";
-import PersonForm from "./components/PersonForm";
-import Persons from "./components/Persons";
-import personsService from "./services/persons";
+import Filter from './components/Filter';
+import Notification from './components/Notification';
+import PersonForm from './components/PersonForm';
+import Persons from './components/Persons';
+import personsService from './services/persons';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -51,7 +54,7 @@ const App = () => {
           .catch((error) => {
             console.error("Error updating person:", error);
             setNotificationMessage(
-              ` ${newName} has already been removed from server`
+              `${newName} has already been removed from the server`
             );
             setNotificationType("error");
             setPersons(persons.filter((person) => person.id !== nameExists.id));
@@ -63,16 +66,29 @@ const App = () => {
     } else {
       const newPerson = { name: newName, number: newNumber };
 
-      personsService.create(newPerson).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson));
-        setNewName("");
-        setNewNumber("");
-        setNotificationMessage(`${newName} was added to the phonebook.`);
-        setNotificationType("success");
-        setTimeout(() => {
-          setNotificationMessage(null);
-        }, 5000);
-      });
+      personsService
+        .create(newPerson)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+          setNewName("");
+          setNewNumber("");
+          setNotificationMessage(`${newName} was added to the phonebook.`);
+          setNotificationType("success");
+          setTimeout(() => {
+            setNotificationMessage(null);
+          }, 5000);
+        })
+        .catch((error) => {
+          console.error("Error adding person:", error);
+          setNotificationMessage(
+            error.response.data.error ||
+              "Error adding person. Please check the inputs."
+          );
+          setNotificationType("error");
+          setTimeout(() => {
+            setNotificationMessage(null);
+          }, 5000);
+        });
     }
   };
 
@@ -92,6 +108,9 @@ const App = () => {
           console.error("Error deleting person:", error);
           setNotificationMessage(`Error deleting ${name}`);
           setNotificationType("error");
+          setTimeout(() => {
+            setNotificationMessage(null);
+          }, 5000);
         });
     }
   };
