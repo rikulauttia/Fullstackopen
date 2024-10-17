@@ -1,11 +1,12 @@
-const http = require('http')
 const config = require('./utils/config')
 const express = require('express')
+require('express-async-errors')
 const app = express()
 const cors = require('cors')
 const logger = require('./utils/logger')
-const blogsRouter = require('./controllers/blogs')
 const mongoose = require('mongoose')
+
+const blogsRouter = require('./controllers/blogs')
 
 mongoose.set('strictQuery', false)
 
