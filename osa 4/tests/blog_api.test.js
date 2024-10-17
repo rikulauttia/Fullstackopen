@@ -61,7 +61,7 @@ describe('testing post', () => {
 	})
 })
 
-describe('testing post with missing likes field', () => {
+describe('testing post with missing fields', () => {
 	test('if likes is missing, it defaults to 0', async () => {
 		const newBlog = {
 			title: 'No Likes Blog',
@@ -72,12 +72,37 @@ describe('testing post with missing likes field', () => {
 		await api
 			.post('/api/blogs')
 			.send(newBlog)
-			.expect(201)
 
 		const blogsAtEnd = await api.get('/api/blogs')
 		const addedBlog = blogsAtEnd.body[blogsAtEnd.body.length - 1]
 
 		expect(addedBlog.likes).toBe(0)
+	})
+
+	test('if title is missing', async () => {
+		const newBlog = {
+			author: 'Author without Title',
+			url: 'http://example.com',
+			likes: 5
+		}
+
+		await api
+			.post('/api/blogs')
+			.send(newBlog)
+			.expect(400)
+	})
+
+	test('fails with status code 400 if url is missing', async () => {
+		const newBlog = {
+			title: 'Blog without URL',
+			author: 'Author without URL',
+			likes: 5
+		}
+
+		await api
+			.post('/api/blogs')
+			.send(newBlog)
+			.expect(400)
 	})
 })
 
