@@ -107,6 +107,45 @@ describe('testing post with missing fields', () => {
 })
 
 
+describe('testing delete', () => {
+	test('succeeds with status code 204 if id is valid', async () => {
+		const blogsAtStart = await helper.blogsInDb()
+		const blogToDelete = blogsAtStart[0]
+		await api
+			.delete(`/api/blogs/${blogToDelete.id}`)
+			.expect(204)
+		const blogsAtEnd = await helper.blogsInDb()
+		expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
+
+		const ids = blogsAtEnd.map(b => b.id)
+		expect(ids).not.toContain(blogToDelete.id)
+	})
+})
+
+describe('testing updating', () => {
+	test('succeeds in updating the likes of a blog', async () => {
+		const blogsAtStart = await helper.blogsInDb()
+		const blogToUpdate = blogsAtStart[0]
+
+		const updatedBlog = {
+			title: 'Updated Title',
+			author: 'Updated Author',
+			url: 'https://updatedurl.com',
+			likes: 90
+		}
+
+		await api
+			.put(`/api/blogs/${blogToUpdate.id}`)
+			.send(updatedBlog)
+			.expect(200)
+
+		const blogsAtEnd = await helper.blogsInDb()
+		const updatedBlogFromDb = blogsAtEnd.find(b => b.id === blogToUpdate.id)
+
+		expect(updatedBlogFromDb.likes).toEqual(updatedBlog.likes)
+	})
+})
+
 afterAll(async () => {
 	await mongoose.connection.close()
 })
