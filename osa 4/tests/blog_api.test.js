@@ -25,10 +25,42 @@ describe('testing get', () => {
 	test('blogs have an id field instead of _id', async () => {
 		const response = await api.get('/api/blogs')
 		response.body.forEach(blog => {
-            expect(blog.id).toBeDefined()
-        })
+			expect(blog.id).toBeDefined()
+		})
 	})
 })
+
+describe('testing post', () => {
+	test('blog is added', async () => {
+		const newBlog = {
+			title: 'New Blog',
+			author: 'Test Author',
+			url: 'http://example.com',
+			likes: 10,
+		}
+
+		await api
+			.post('/api/blogs')
+			.send(newBlog)
+
+		const response = await api.get('/api/blogs')
+		expect(response.body.length).toEqual(helper.initialBlogs.length + 1)
+	})
+	test('added blog is in json format', async () => {
+		const newBlog = {
+			title: 'New Blog',
+			author: 'Test Author',
+			url: 'http://example.com',
+			likes: 10,
+		}
+		await api
+			.post('/api/blogs')
+			.send(newBlog)
+			.expect(201)
+			.expect('Content-Type', /application\/json/)
+	})
+})
+
 
 afterAll(async () => {
 	await mongoose.connection.close()
