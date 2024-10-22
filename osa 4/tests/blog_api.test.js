@@ -219,13 +219,46 @@ describe('testing post with missing fields', () => {
 
 describe('testing delete', () => {
 	test('succeeds with status code 204 if id is valid', async () => {
-		const blogsAtStart = await helper.blogsInDb()
-		const blogToDelete = blogsAtStart[0]
+		const newUser = {
+			username: 'New',
+			name: 'New Newer',
+			password: 'abc123'
+		}
+
+		const savedUser = await api
+			.post('/api/users')
+			.send(newUser)
+
+		const loginDetails = {
+			username: 'New',
+			password: 'abc123'
+		}
+
+		const login = await api
+			.post('/api/login')
+			.send(loginDetails)
+
+		const newBlog = {
+			title: 'New Blog',
+			author: 'Test Author',
+			url: 'http://example.com',
+			likes: 5,
+			user: savedUser.body.id
+		}
+
+		const blogResponse = await api
+			.post('/api/blogs')
+			.set('Authorization', `Bearer ${login.body.token}`)
+			.send(newBlog)
+			.expect(201)
+
+		const blogToDelete = blogResponse.body
 		await api
 			.delete(`/api/blogs/${blogToDelete.id}`)
+			.set('Authorization', `Bearer ${login.body.token}`)
 			.expect(204)
 		const blogsAtEnd = await helper.blogsInDb()
-		expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
+		expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
 
 		const ids = blogsAtEnd.map(b => b.id)
 		expect(ids).not.toContain(blogToDelete.id)
