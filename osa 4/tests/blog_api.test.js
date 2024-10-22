@@ -106,6 +106,22 @@ describe('testing post', () => {
 			.expect(201)
 			.expect('Content-Type', /application\/json/)
 	})
+
+	test('blog not added if no token', async () => {
+
+		const newBlog = {
+			title: 'Blog',
+			author: 'Author',
+			url: 'http://example.com',
+			likes: 5
+		}
+
+		await api
+			.post('/api/blogs')
+			.send(newBlog)
+			.expect(401)
+
+	})
 })
 
 describe('testing post with missing fields', () => {
