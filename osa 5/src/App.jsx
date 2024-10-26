@@ -14,8 +14,9 @@ const App = () => {
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [newBlog, setNewBlog] = useState('');
-
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -32,9 +33,6 @@ const App = () => {
     }
   }, [])
 
-  const handleBlogChange = (event) => {
-    setNewBlog(event.target.value);
-  };
 
   const handleLogout = async (event) => {
     event.preventDefault()
@@ -65,13 +63,11 @@ const App = () => {
   const addBlog = async (event) => {
     event.preventDefault();
     try {
-      const blogObject = {
-        title: newBlog,
-        author: user.name,
-      };
-      const returnedBlog = await blogService.create(blogObject);
-      setBlogs(blogs.concat(returnedBlog)); 
-      setNewBlog('');
+        await blogService.create({
+          title, author, url
+        })
+        setSuccesMessage(`A new blog ${title} by ${author} added`)
+        setTimeout(() => { setSuccesMessage(null) }, 2000)
     } catch (exception) {
       setErrorMessage('Failed to add blog');
       setTimeout(() => {
@@ -106,11 +102,30 @@ const App = () => {
 
   const blogForm = () => (
     <form onSubmit={addBlog}>
-      <input
-        value={newBlog}
-        onChange={handleBlogChange}
-        placeholder="Enter blog title"
-      />
+      <div>
+        Title:
+        <input
+          type="text"
+          value={title}
+          onChange={({ target }) => setTitle(target.value)}
+        />
+      </div>
+      <div>
+        Author:
+        <input
+          type="text"
+          value={author}
+          onChange={({ target }) => setAuthor(target.value)}
+        />
+      </div>
+      <div>
+        URL:
+        <input
+          type="text"
+          value={url}
+          onChange={({ target }) => setUrl(target.value)}
+        />
+      </div>
       <button type="submit">save</button>
     </form>  
   );
