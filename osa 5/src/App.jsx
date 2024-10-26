@@ -3,13 +3,14 @@ import {
   useState,
 } from 'react';
 
+import Blog from './components/Blog';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState(null)
-  const [succesMessage, setSuccesMessage] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -126,15 +127,15 @@ const App = () => {
 
   return (
     <div>
-      <h2>blogs</h2>
-      {succesMessage && succesMessage}
-      <p>{user.name} logged in</p>
+      <h2>Blogs</h2>
+      {successMessage && successMessage}
+      <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
       {blogForm()}
-      <ul>
+      <div>
         {blogs.map(blog => (
-          <li key={blog.id}>{blog.title} by {blog.author}</li>
+          <Blog key={blog.id} blog={blog}/>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
