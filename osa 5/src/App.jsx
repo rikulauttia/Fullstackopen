@@ -4,6 +4,7 @@ import {
 } from 'react';
 
 import Blog from './components/Blog';
+import Notification from './components/Notification';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
@@ -68,7 +69,10 @@ const App = () => {
         })
         setSuccessMessage(`A new blog ${title} by ${author} added`)
         setBlogs(blogs.concat(newBlog))
-        setTimeout(() => { setSuccessMessage(null) }, 2000)
+        setTitle('');
+        setAuthor('');
+        setUrl('');
+        setTimeout(() => { setSuccessMessage(null) }, 5000)
     } catch (exception) {
       setErrorMessage('Failed to add blog');
       setTimeout(() => {
@@ -135,7 +139,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
-        {errorMessage && errorMessage}
+        <Notification message={errorMessage} type="error" />
         {loginForm()}
       </div>
     );
@@ -144,7 +148,8 @@ const App = () => {
   return (
     <div>
       <h2>Blogs</h2>
-      {successMessage && successMessage}
+      <Notification message={successMessage} type="success" />
+      <Notification message={errorMessage} type="error" />
       <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
 
       <h2>Create new</h2>
