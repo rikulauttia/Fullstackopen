@@ -63,11 +63,15 @@ const App = () => {
   const addBlog = async (event) => {
     event.preventDefault();
     try {
-        await blogService.create({
+        const newBlog = await blogService.create({
           title, author, url
         })
-        setSuccesMessage(`A new blog ${title} by ${author} added`)
-        setTimeout(() => { setSuccesMessage(null) }, 2000)
+        setSuccessMessage(`A new blog ${title} by ${author} added`)
+        setBlogs(blogs.concat(newBlog))
+        setTimeout(() => { setSuccessMessage(null) }, 2000)
+        setTitle('')
+        setAuthor('')
+        setUrl('')
     } catch (exception) {
       setErrorMessage('Failed to add blog');
       setTimeout(() => {
