@@ -69,9 +69,6 @@ const App = () => {
         setSuccessMessage(`A new blog ${title} by ${author} added`)
         setBlogs(blogs.concat(newBlog))
         setTimeout(() => { setSuccessMessage(null) }, 2000)
-        setTitle('')
-        setAuthor('')
-        setUrl('')
     } catch (exception) {
       setErrorMessage('Failed to add blog');
       setTimeout(() => {
@@ -130,7 +127,7 @@ const App = () => {
           onChange={({ target }) => setUrl(target.value)}
         />
       </div>
-      <button type="submit">save</button>
+      <button type="submit">create</button>
     </form>  
   );
 
@@ -149,7 +146,10 @@ const App = () => {
       <h2>Blogs</h2>
       {successMessage && successMessage}
       <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
+
+      <h2>Create new</h2>
       {blogForm()}
+
       <div>
         {blogs.map(blog => (
           <Blog key={blog.id} blog={blog}/>
