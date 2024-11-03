@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import blogService from '../services/blogs';
 
-const Blog = ({ blog, updateBlog }) => {
+const Blog = ({ blog, updateBlog, removeBlog, user }) => {
   const [visible, setVisible] = useState(false);
 
   const toggleVisibility = () => {
@@ -37,6 +37,11 @@ const Blog = ({ blog, updateBlog }) => {
           <p>{blog.url}</p>
           <p>likes {blog.likes} <button onClick={handleLike}>like</button></p>
           <p>{blog.user.name}</p>
+          {user.name === blog.user.name && (
+            <button onClick={() => removeBlog(blog.id, blog.title, blog.author)}>
+              remove
+            </button>
+          )}
         </div>
       )}
     </div>  
