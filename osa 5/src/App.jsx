@@ -57,7 +57,7 @@ const App = () => {
   const updateBlog = async (updatedBlog) => {
     try {
       const returnedBlog = await blogService.update(updatedBlog.id, updatedBlog);
-      setBlogs(blogs.map(blog => blog.id === returnedBlog.id ? returnedBlog : blog));
+      setBlogs(blogs.map(blog => blog.id === returnedBlog.id ? { ...returnedBlog, user: blog.user || returnedBlog.user } : blog));
     } catch (exception) {
       setErrorMessage('Failed to liking the blog');
       setTimeout(() => {

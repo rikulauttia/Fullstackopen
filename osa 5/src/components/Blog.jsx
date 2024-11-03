@@ -12,7 +12,7 @@ const Blog = ({ blog, updateBlog }) => {
   const handleLike = async () => {
     const updatedBlog = {
       ...blog,
-      likes: blog.likes + 1,
+      likes: blog.likes + 1
     };
 
     const returnedBlog = await blogService.update(blog.id, updatedBlog);
