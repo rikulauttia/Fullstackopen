@@ -2,15 +2,15 @@ import {
   useEffect,
   useRef,
   useState,
-} from 'react';
+} from 'react'
 
-import Blog from './components/Blog';
-import BlogForm from './components/BlogForm';
-import LoginForm from './components/LoginForm';
-import Notification from './components/Notification';
-import Togglable from './components/Togglable';
-import blogService from './services/blogs';
-import loginService from './services/login';
+import Blog from './components/Blog'
+import BlogForm from './components/BlogForm'
+import LoginForm from './components/LoginForm'
+import Notification from './components/Notification'
+import Togglable from './components/Togglable'
+import blogService from './services/blogs'
+import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -22,7 +22,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -56,52 +56,52 @@ const App = () => {
 
   const updateBlog = async (updatedBlog) => {
     try {
-      const returnedBlog = await blogService.update(updatedBlog.id, updatedBlog);
-      setBlogs(blogs.map(blog => blog.id === returnedBlog.id ? { ...returnedBlog, user: blog.user || returnedBlog.user } : blog));
+      const returnedBlog = await blogService.update(updatedBlog.id, updatedBlog)
+      setBlogs(blogs.map(blog => blog.id === returnedBlog.id ? { ...returnedBlog, user: blog.user || returnedBlog.user } : blog))
     } catch (exception) {
-      setErrorMessage('Failed to liking the blog');
+      setErrorMessage('Failed to liking the blog')
       setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+        setErrorMessage(null)
+      }, 5000)
     }
-  };
+  }
 
   const addBlog = async (blogObject) => {
     try {
-        blogFormRef.current.toggleVisibility()
-        const newBlog = await blogService.create(blogObject)
-        setBlogs(blogs.concat(newBlog))
-        setSuccessMessage(`A new blog ${newBlog.title} by ${newBlog.author} added`)
-        setTimeout(() => { setSuccessMessage(null) }, 5000)
+      blogFormRef.current.toggleVisibility()
+      const newBlog = await blogService.create(blogObject)
+      setBlogs(blogs.concat(newBlog))
+      setSuccessMessage(`A new blog ${newBlog.title} by ${newBlog.author} added`)
+      setTimeout(() => { setSuccessMessage(null) }, 5000)
     } catch (exception) {
-      setErrorMessage('Failed to add blog');
+      setErrorMessage('Failed to add blog')
       setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+        setErrorMessage(null)
+      }, 5000)
     }
-  };
+  }
 
   const removeBlog = async (id, title, author) => {
-    const confirmRemove = window.confirm(`Remove blog ${title} by ${author}?`);
-    if (!confirmRemove) return;
+    const confirmRemove = window.confirm(`Remove blog ${title} by ${author}?`)
+    if (!confirmRemove) return
 
     try {
-      await blogService.remove(id);
-      setBlogs(blogs.filter(blog => blog.id !== id));
-      setSuccessMessage(`Removed blog ${title} by ${author}`);
-      setTimeout(() => { setSuccessMessage(null); }, 5000);
+      await blogService.remove(id)
+      setBlogs(blogs.filter(blog => blog.id !== id))
+      setSuccessMessage(`Removed blog ${title} by ${author}`)
+      setTimeout(() => { setSuccessMessage(null) }, 5000)
     } catch (error) {
-      setErrorMessage(`Failed to remove blog ${title}`);
-      setTimeout(() => { setErrorMessage(null); }, 5000);
+      setErrorMessage(`Failed to remove blog ${title}`)
+      setTimeout(() => { setErrorMessage(null) }, 5000)
     }
-  };
+  }
 
   if (user === null) {
     return (
       <div>
         <LoginForm login={loginUser} errorMessage={errorMessage} />
       </div>
-    );
+    )
   }
 
   return (
@@ -116,19 +116,19 @@ const App = () => {
       </Togglable>
 
       {blogs
-      .slice()
-      .sort((a, b) => b.likes - a.likes)
-      .map(blog => (
-        <Blog
+        .slice()
+        .sort((a, b) => b.likes - a.likes)
+        .map(blog => (
+          <Blog
             key={blog.id}
             blog={blog}
             updateBlog={updateBlog}
             removeBlog={removeBlog}
             user={user}
           />
-      ))}
-  </div>
-);
+        ))}
+    </div>
+  )
 }
 
 export default App
