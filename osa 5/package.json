@@ -31,6 +31,7 @@
     "eslint-plugin-vitest-globals": "^1.5.0",
     "jsdom": "^25.0.1",
     "vite": "^4.4.5",
-    "vitest": "^2.1.4"
+    "vitest": "^2.1.4",
+    "vitest-mock-axios": "^0.1.0"
   }
 }
