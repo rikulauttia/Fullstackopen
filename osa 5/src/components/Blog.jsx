@@ -29,7 +29,7 @@ const Blog = ({ blog, updateBlog, removeBlog, user }) => {
 		marginBottom: 5
 	}
 	return (
-		<div style={blogStyle}>
+		<div className='blog' style={blogStyle}>
 			<div>
 				{blog.title} {blog.author}
 				<button onClick={toggleVisibility}>{visible ? 'hide' : 'view'}</button>
