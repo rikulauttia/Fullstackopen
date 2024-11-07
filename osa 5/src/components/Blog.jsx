@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 
-import blogService from '../services/blogs'
+import blogService from '../services/blogs';
 
 const Blog = ({ blog, updateBlog, removeBlog, user }) => {
 	const [visible, setVisible] = useState(false)
@@ -39,7 +39,7 @@ const Blog = ({ blog, updateBlog, removeBlog, user }) => {
 					<p>{blog.url}</p>
 					<p>likes {blog.likes} <button onClick={handleLike}>like</button></p>
 					<p>{blog.user.name}</p>
-					{user.name === blog.user.name && (
+					{user?.name === blog.user?.name && (
 						<button onClick={() => removeBlog(blog.id, blog.title, blog.author)}>
               remove
 						</button>
@@ -59,11 +59,6 @@ Blog.propTypes = {
 		user: PropTypes.shape({
 			name: PropTypes.string.isRequired,
 		}).isRequired,
-	}).isRequired,
-	updateBlog: PropTypes.func.isRequired,
-	removeBlog: PropTypes.func.isRequired,
-	user: PropTypes.shape({
-		name: PropTypes.string.isRequired,
 	}).isRequired
 }
 
