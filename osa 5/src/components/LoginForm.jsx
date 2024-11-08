@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 
 const LoginForm = ({ login, errorMessage }) => {
 	const [username, setUsername] = useState('')
@@ -25,6 +25,7 @@ const LoginForm = ({ login, errorMessage }) => {
                 username
 					<input
 						type="text"
+						data-testid='username'
 						value={username}
 						name="Username"
 						onChange={({ target }) => setUsername(target.value)}
@@ -34,6 +35,7 @@ const LoginForm = ({ login, errorMessage }) => {
                 password
 					<input
 						type="password"
+						data-testid='password'
 						value={password}
 						name="Password"
 						onChange={({ target }) => setPassword(target.value)}
