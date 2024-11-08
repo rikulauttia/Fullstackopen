@@ -1,16 +1,16 @@
 import {
-	useEffect,
-	useRef,
-	useState,
-} from 'react'
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
-import Blog from './components/Blog'
-import BlogForm from './components/BlogForm'
-import LoginForm from './components/LoginForm'
-import Notification from './components/Notification'
-import Togglable from './components/Togglable'
-import blogService from './services/blogs'
-import loginService from './services/login'
+import Blog from './components/Blog';
+import BlogForm from './components/BlogForm';
+import LoginForm from './components/LoginForm';
+import Notification from './components/Notification';
+import Togglable from './components/Togglable';
+import blogService from './services/blogs';
+import loginService from './services/login';
 
 const App = () => {
 	const [blogs, setBlogs] = useState([])
@@ -33,6 +33,7 @@ const App = () => {
 			blogService.setToken(user.token)
 		}
 	}, [])
+
 
 	const handleLogout = async (event) => {
 		event.preventDefault()
@@ -70,6 +71,7 @@ const App = () => {
 		try {
 			blogFormRef.current.toggleVisibility()
 			const newBlog = await blogService.create(blogObject)
+			newBlog.user = user
 			setBlogs(blogs.concat(newBlog))
 			setSuccessMessage(`A new blog ${newBlog.title} by ${newBlog.author} added`)
 			setTimeout(() => { setSuccessMessage(null) }, 5000)

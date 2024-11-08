@@ -35,6 +35,7 @@ describe('Blog app', () => {
         await expect(page.getByText('wrong username or password')).toBeVisible()
     })
   })
+
   describe('When logged in', () => {
     beforeEach(async ({ page }) => {
         await loginWith(page, 'mluukkai', 'salainen')
@@ -62,6 +63,25 @@ describe('Blog app', () => {
         await expect(page.getByText('likes 0')).toBeVisible();
         await likeButton.click();
         await expect(page.getByText('likes 1')).toBeVisible();
-      });
+    });
+
+    test('a blog can be deleted by the user who created it', async ({ page }) => {
+        await page.getByRole('button', { name: 'create new blog' }).click();
+        await page.getByTestId('title').fill('Blog to be deleted');
+        await page.getByTestId('author').fill('Author Delete');
+        await page.getByTestId('url').fill('www.example.com');
+        await page.getByRole('button', { name: 'create' }).click();
+        await expect(page.getByText('Blog to be deleted Author Delete')).toBeVisible();
+        
+        await page.getByText('view').click();
+
+        page.on('dialog', (dialog) => {
+            dialog.accept();
+        });
+
+        await page.getByTestId('remove-button').click();
+        await expect(page.getByText('Blog to be deleted Author Delete')).not.toBeVisible();
+    });
+
   })
-});
+})

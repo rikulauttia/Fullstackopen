@@ -40,8 +40,8 @@ const Blog = ({ blog, updateBlog, removeBlog, user }) => {
 					<p>likes {blog.likes} <button onClick={handleLike}>like</button></p>
 					<p>{blog.user.name}</p>
 					{user?.name === blog.user?.name && (
-						<button onClick={() => removeBlog(blog.id, blog.title, blog.author)}>
-              remove
+						<button data-testid="remove-button" onClick={() => removeBlog(blog.id, blog.title, blog.author)}>
+							remove
 						</button>
 					)}
 				</div>
@@ -56,9 +56,6 @@ Blog.propTypes = {
 		author: PropTypes.string.isRequired,
 		likes: PropTypes.number.isRequired,
 		url: PropTypes.string.isRequired,
-		user: PropTypes.shape({
-			name: PropTypes.string.isRequired,
-		}).isRequired,
 	}).isRequired
 }
 
