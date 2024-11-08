@@ -11,6 +11,15 @@ describe('Blog app', () => {
         password: 'salainen',
       },
     });
+
+    await request.post('/api/users', {
+        data: {
+          name: 'Another User',
+          username: 'anotheruser',
+          password: 'anotherpassword',
+        },
+      });
+
     await page.goto('/');
   });
 
@@ -83,5 +92,24 @@ describe('Blog app', () => {
         await expect(page.getByText('Blog to be deleted Author Delete')).not.toBeVisible();
     });
 
+    test('only the user who created the blog can see the remove button', async ({ page }) => {
+        await page.getByRole('button', { name: 'create new blog' }).click();
+        await page.getByTestId('title').fill('User-specific Blog');
+        await page.getByTestId('author').fill('Author Test');
+        await page.getByTestId('url').fill('www.example.com');
+        await page.getByRole('button', { name: 'create' }).click();
+        await expect(page.getByText('User-specific Blog Author Test')).toBeVisible();
+  
+        await page.getByText('view').click();
+        await expect(page.getByTestId('remove-button')).toBeVisible();
+  
+        await page.getByRole('button', { name: 'logout' }).click();
+  
+        await loginWith(page, 'anotheruser', 'anotherpassword');
+        await expect(page.getByText('Another User logged in')).toBeVisible();
+  
+        await page.getByText('view').click();
+        await expect(page.getByRole("button", {name: "remove"})).not.toBeVisible()
+      });
   })
 })
