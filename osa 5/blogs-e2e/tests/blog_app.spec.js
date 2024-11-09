@@ -111,5 +111,40 @@ describe('Blog app', () => {
         await page.getByText('view').click();
         await expect(page.getByRole("button", {name: "remove"})).not.toBeVisible()
       });
+
+      test('blogs are ordered by likes in descending order', async ({ page }) => {
+        const blogs = [
+          { title: 'Blog with 3 likes', author: 'Author 1', url: 'www.example1.com', likes: 3 },
+          { title: 'Blog with 5 likes', author: 'Author 2', url: 'www.example2.com', likes: 5 },
+          { title: 'Blog with 1 like', author: 'Author 3', url: 'www.example3.com', likes: 1 }
+        ];
+  
+        for (const blog of blogs) {
+          await page.getByRole('button', { name: 'create new blog' }).click();
+          await page.getByTestId('title').fill(blog.title);
+          await page.getByTestId('author').fill(blog.author);
+          await page.getByTestId('url').fill(blog.url);
+          await page.getByRole('button', { name: 'create' }).click();
+  
+          await page.getByText('view').click();
+          const likeButton = page.getByRole('button', { name: 'like' });
+          for (let i = 0; i < blog.likes; i++) {
+            await likeButton.click();
+          }
+          await page.getByText('hide').click();
+        }
+  
+        const blogTitles = await page.locator('.blog .title').allTextContents();
+        const blogLikes = await page.locator('.blog .likes').allTextContents();
+
+        const blogsWithLikes = blogTitles.map((title, index) => ({
+            title,
+            likes: parseInt(blogLikes[index].match(/\d+/)[0])
+        }));
+
+        const sortedByLikes = [...blogsWithLikes].sort((a, b) => b.likes - a.likes);
+
+        expect(blogsWithLikes).toEqual(sortedByLikes);
+      });
   })
 })
