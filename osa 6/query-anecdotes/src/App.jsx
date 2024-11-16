@@ -2,15 +2,25 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import AnecdoteForm from "./components/AnecdoteForm";
 import Notification from "./components/Notification";
+import { useNotificationDispatch } from "./NotificationContext";
 import { createAnecdote, getAnecdotes, updateAnecdote } from "./requests";
 
 const App = () => {
   const queryClient = useQueryClient();
+  const dispatchNotification = useNotificationDispatch();
 
   const newAnecdoteMutation = useMutation({
     mutationFn: createAnecdote,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["anecdotes"] });
+      dispatchNotification({
+        type: "SET_NOTIFICATION",
+        payload: "Anecdote added!",
+      });
+      setTimeout(
+        () => dispatchNotification({ type: "CLEAR_NOTIFICATION" }),
+        5000
+      );
     },
   });
 
@@ -27,7 +37,14 @@ const App = () => {
     event.target.anecdote.value = "";
 
     if (content.length < 5) {
-      alert("Anecdote must be at least 5 characters long.");
+      dispatchNotification({
+        type: "SET_NOTIFICATION",
+        payload: "Anecdote must be at least 5 characters long.",
+      });
+      setTimeout(
+        () => dispatchNotification({ type: "CLEAR_NOTIFICATION" }),
+        5000
+      );
       return;
     }
 
@@ -40,6 +57,15 @@ const App = () => {
       votes: anecdote.votes + 1,
     };
     voteAnecdoteMutation.mutate(updatedAnecdote);
+
+    dispatchNotification({
+      type: "SET_NOTIFICATION",
+      payload: `You voted '${anecdote.content}'`,
+    });
+    setTimeout(
+      () => dispatchNotification({ type: "CLEAR_NOTIFICATION" }),
+      5000
+    );
   };
 
   const {
