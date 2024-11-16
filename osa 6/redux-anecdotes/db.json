@@ -29,6 +29,31 @@
       "content": "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.",
       "id": "98312",
       "votes": 0
+    },
+    {
+      "id": "9a2e",
+      "content": "I'm sure that adding manpower to a late software project makes it later!",
+      "important": false
+    },
+    {
+      "id": "5751",
+      "content": "Debugging is triple as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.",
+      "important": false
+    },
+    {
+      "id": "4771",
+      "content": "I'm not sure that if adding manpower to a late software project makes it later!",
+      "votes": 0
+    },
+    {
+      "id": "96d6",
+      "content": "If it hurts, do it more often it makes you stronger!",
+      "votes": 0
+    },
+    {
+      "id": "d356",
+      "content": "If it hurts, do it more often it makes you stronger I mean it!!",
+      "votes": 0
     }
   ]
 }
