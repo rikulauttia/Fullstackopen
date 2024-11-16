@@ -1,40 +1,70 @@
-import AnecdoteForm from './components/AnecdoteForm'
-import Notification from './components/Notification'
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import AnecdoteForm from "./components/AnecdoteForm";
+import Notification from "./components/Notification";
+import { createAnecdote, getAnecdotes } from "./requests";
 
 const App = () => {
+  const queryClient = useQueryClient();
 
-  const handleVote = (anecdote) => {
-    console.log('vote')
+  const newAnecdoteMutation = useMutation({
+    mutationFn: createAnecdote,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["anecdotes"] });
+    },
+  });
+
+  const addAnecdote = async (event) => {
+    event.preventDefault();
+    const content = event.target.anecdote.value;
+    event.target.anecdote.value = "";
+
+    if (content.length < 5) {
+      alert("Anecdote must be at least 5 characters long.");
+      return;
+    }
+
+    newAnecdoteMutation.mutate({ content, votes: 0 });
+  };
+
+  const {
+    data: anecdotes,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["anecdotes"],
+    queryFn: getAnecdotes,
+    retry: 1,
+  });
+
+  if (isLoading) {
+    return <div>loading data...</div>;
   }
 
-  const anecdotes = [
-    {
-      "content": "If it hurts, do it more often",
-      "id": "47145",
-      "votes": 0
-    },
-  ]
+  if (isError) {
+    return <div>anecdote service not available due to problems in server</div>;
+  }
+
+  const handleVote = (anecdote) => {
+    console.log("vote");
+  };
 
   return (
     <div>
       <h3>Anecdote app</h3>
-    
       <Notification />
-      <AnecdoteForm />
-    
-      {anecdotes.map(anecdote =>
+      <AnecdoteForm onCreate={addAnecdote} />
+      {anecdotes.map((anecdote) => (
         <div key={anecdote.id}>
-          <div>
-            {anecdote.content}
-          </div>
+          <div>{anecdote.content}</div>
           <div>
             has {anecdote.votes}
             <button onClick={() => handleVote(anecdote)}>vote</button>
           </div>
         </div>
-      )}
+      ))}
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
