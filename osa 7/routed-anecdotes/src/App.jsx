@@ -5,6 +5,7 @@ import {
   Link,
   Route,
   Routes,
+  useNavigate,
   useParams,
 } from 'react-router-dom';
 
@@ -93,24 +94,36 @@ const Footer = () => (
   </div>
 );
 
-const CreateNew = (props) => {
+const Notification = ({ message }) => {
+  if (!message) return null;
+  return <div style={{ color: "red", marginBottom: "10px" }}>{message}</div>;
+};
+
+const CreateNew = ({ addNew, setNotification }) => {
   const [content, setContent] = useState("");
   const [author, setAuthor] = useState("");
   const [info, setInfo] = useState("");
 
+  const navigate = useNavigate();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    props.addNew({
+    addNew({
       content,
       author,
       info,
       votes: 0,
     });
+    setNotification(`A new anecdote "${content}" created!`);
+    setTimeout(() => {
+      setNotification("");
+    }, 5000);
+    navigate("/");
   };
 
   return (
     <div>
-      <h2>create a new anecdote</h2>
+      <h2>Create a New Anecdote</h2>
       <form onSubmit={handleSubmit}>
         <div>
           content
@@ -167,31 +180,24 @@ const App = () => {
     setAnecdotes(anecdotes.concat(anecdote));
   };
 
-  const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
-
-  const vote = (id) => {
-    const anecdote = anecdoteById(id);
-
-    const voted = {
-      ...anecdote,
-      votes: anecdote.votes + 1,
-    };
-
-    setAnecdotes(anecdotes.map((a) => (a.id === id ? voted : a)));
-  };
-
   return (
     <Router>
       <div>
-        <h1>Software anecdotes</h1>
+        <h1>Software Anecdotes</h1>
         <Menu />
+        <Notification message={notification} />
         <Routes>
           <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
           <Route
             path="/anecdotes/:id"
             element={<Anecdote anecdotes={anecdotes} />}
           />
-          <Route path="/create" element={<CreateNew addNew={addNew} />} />
+          <Route
+            path="/create"
+            element={
+              <CreateNew addNew={addNew} setNotification={setNotification} />
+            }
+          />
           <Route path="/about" element={<About />} />
         </Routes>
         <Footer />
