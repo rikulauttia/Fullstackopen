@@ -1,6 +1,11 @@
 import { useState } from 'react';
 
-import { Link } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Link,
+  Route,
+  Routes,
+} from 'react-router-dom';
 
 const Menu = () => {
   const padding = {
@@ -11,10 +16,10 @@ const Menu = () => {
       <Link style={padding} to="/">
         anecdotes
       </Link>
-      <Link style={padding} to="create">
+      <Link style={padding} to="/create">
         create new
       </Link>
-      <Link style={padding} to="about">
+      <Link style={padding} to="/about">
         about
       </Link>
     </div>
@@ -44,7 +49,7 @@ const About = () => (
       more general than the brief tale itself, such as to characterize a person
       by delineating a specific quirk or trait, to communicate an abstract idea
       about a person, place, or thing through the concrete details of a short
-      narrative. An anecdote is "a story with a point."
+      narrative. An anecdote is &quot;a story with a point.&quot;
     </em>
 
     <p>
@@ -153,14 +158,18 @@ const App = () => {
   };
 
   return (
-    <div>
-      <h1>Software anecdotes</h1>
-      <Menu />
-      <AnecdoteList anecdotes={anecdotes} />
-      <About />
-      <CreateNew addNew={addNew} />
-      <Footer />
-    </div>
+    <Router>
+      <div>
+        <h1>Software anecdotes</h1>
+        <Menu />
+        <Routes>
+          <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
+          <Route path="/create" element={<CreateNew addNew={addNew} />} />
+          <Route path="/about" element={<About />} />
+        </Routes>
+        <Footer />
+      </div>
+    </Router>
   );
 };
 
