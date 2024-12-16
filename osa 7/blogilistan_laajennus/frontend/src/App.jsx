@@ -4,26 +4,33 @@ import {
   useState,
 } from 'react';
 
-import { useDispatch } from 'react-redux';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
 
 import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
 import LoginForm from './components/LoginForm';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
+import {
+  createBlog,
+  initializeBlogs,
+} from './redux/blogReducer';
 import { setNotification } from './redux/notificationReducer';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
 const App = () => {
-	const [blogs, setBlogs] = useState([]);
+	const blogs = useSelector((state) => state.blogs);
 	const dispatch = useDispatch();
 	const [user, setUser] = useState(null);
 	const blogFormRef = useRef();
 
 	useEffect(() => {
-		blogService.getAll().then((blogs) => setBlogs(blogs));
-	}, []);
+		dispatch(initializeBlogs());
+	}, [dispatch]);
 
 	useEffect(() => {
 		const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
@@ -88,13 +95,11 @@ const App = () => {
 	const addBlog = async (blogObject) => {
 		try {
 			blogFormRef.current.toggleVisibility();
-			const newBlog = await blogService.create(blogObject);
-			newBlog.user = user;
-			setBlogs(blogs.concat(newBlog));
+			dispatch(createBlog(blogObject)); // Dispatch the action to create a new blog
 			dispatch(
 				setNotification(
 					{
-						message: `A new blog "${newBlog.title}" by ${newBlog.author} added`,
+						message: `A new blog "${blogObject.title}" by ${blogObject.author} added`,
 						type: 'success',
 					},
 					5
