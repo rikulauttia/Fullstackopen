@@ -95,7 +95,7 @@ const App = () => {
 	const addBlog = async (blogObject) => {
 		try {
 			blogFormRef.current.toggleVisibility();
-			dispatch(createBlog(blogObject)); // Dispatch the action to create a new blog
+			dispatch(createBlog(blogObject)); // Dispatch the action to create new blog
 			dispatch(
 				setNotification(
 					{
