@@ -1,12 +1,19 @@
 import { useEffect, useRef } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
+import {
+	BrowserRouter as Router,
+	NavLink,
+	Route,
+	Routes,
+} from 'react-router-dom';
 
 import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
 import LoginForm from './components/LoginForm';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
+import UserList from './components/UserList';
 import {
 	createBlog,
 	initializeBlogs,
@@ -120,28 +127,46 @@ const App = () => {
 	}
 
 	return (
-		<div>
-			<h2>Blogs</h2>
-			<Notification />
-			<p>
-				{user.name} logged in <button onClick={handleLogout}>logout</button>
-			</p>
-			<Togglable buttonLabel="create new blog" ref={blogFormRef}>
-				<BlogForm createBlog={addBlog} />
-			</Togglable>
-			{blogs
-				.slice()
-				.sort((a, b) => b.likes - a.likes)
-				.map((blog) => (
-					<Blog
-						key={blog.id}
-						blog={blog}
-						updateBlog={likeBlogHandler}
-						removeBlog={removeBlogHandler}
-						user={user}
+		<Router>
+			<div>
+				<h2>Blogs</h2>
+				<Notification />
+				<p>
+					{user.name} logged in <button onClick={handleLogout}>logout</button>
+				</p>
+				<nav>
+					<NavLink to="/" end>
+						Blogs
+					</NavLink>{' '}
+					| <NavLink to="/users">Users</NavLink>
+				</nav>
+				<Routes>
+					<Route
+						path="/"
+						element={
+							<>
+								<Togglable buttonLabel="create new blog" ref={blogFormRef}>
+									<BlogForm createBlog={addBlog} />
+								</Togglable>
+								{blogs
+									.slice()
+									.sort((a, b) => b.likes - a.likes)
+									.map((blog) => (
+										<Blog
+											key={blog.id}
+											blog={blog}
+											updateBlog={likeBlogHandler}
+											removeBlog={removeBlogHandler}
+											user={user}
+										/>
+									))}
+							</>
+						}
 					/>
-				))}
-		</div>
+					<Route path="/users" element={<UserList />} />
+				</Routes>
+			</div>
+		</Router>
 	);
 };
 
