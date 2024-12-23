@@ -13,6 +13,7 @@ import BlogForm from './components/BlogForm';
 import LoginForm from './components/LoginForm';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
+import User from './components/User';
 import UserList from './components/UserList';
 import {
 	createBlog,
@@ -21,20 +22,22 @@ import {
 	removeBlog,
 } from './redux/blogReducer';
 import { setNotification } from './redux/notificationReducer';
-import { logoutUser, setUser } from './redux/userReducer';
+import { initializeUsers, logoutUser, setUser } from './redux/userReducer';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
 const App = () => {
 	const dispatch = useDispatch();
 	const blogs = useSelector((state) => state.blogs);
-	const user = useSelector((state) => state.user);
+	const user = useSelector((state) => state.user.user);
+	const users = useSelector((state) => state.user.users);
 
 	const blogFormRef = useRef();
 
 	// Initialize blogs
 	useEffect(() => {
 		dispatch(initializeBlogs());
+		dispatch(initializeUsers());
 	}, [dispatch]);
 
 	// Set logged-in user from localStorage
@@ -164,6 +167,7 @@ const App = () => {
 						}
 					/>
 					<Route path="/users" element={<UserList />} />
+					<Route path="/users/:id" element={<User />} />
 				</Routes>
 			</div>
 		</Router>
