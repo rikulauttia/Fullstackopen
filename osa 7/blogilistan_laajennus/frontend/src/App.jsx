@@ -1,13 +1,6 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useRef } from 'react';
 
-import {
-  useDispatch,
-  useSelector,
-} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
@@ -15,36 +8,41 @@ import LoginForm from './components/LoginForm';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
 import {
-  createBlog,
-  initializeBlogs,
+	createBlog,
+	initializeBlogs,
+	likeBlog,
+	removeBlog,
 } from './redux/blogReducer';
 import { setNotification } from './redux/notificationReducer';
+import { logoutUser, setUser } from './redux/userReducer';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
 const App = () => {
-	const blogs = useSelector((state) => state.blogs);
 	const dispatch = useDispatch();
-	const [user, setUser] = useState(null);
+	const blogs = useSelector((state) => state.blogs);
+	const user = useSelector((state) => state.user);
+
 	const blogFormRef = useRef();
 
+	// Initialize blogs
 	useEffect(() => {
 		dispatch(initializeBlogs());
 	}, [dispatch]);
 
+	// Set logged-in user from localStorage
 	useEffect(() => {
 		const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
 		if (loggedUserJSON) {
 			const user = JSON.parse(loggedUserJSON);
-			setUser(user);
+			dispatch(setUser(user));
 			blogService.setToken(user.token);
 		}
-	}, []);
+	}, [dispatch]);
 
-	const handleLogout = async (event) => {
-		event.preventDefault();
+	const handleLogout = () => {
 		window.localStorage.removeItem('loggedBlogappUser');
-		setUser(null);
+		dispatch(logoutUser());
 		dispatch(
 			setNotification(
 				{ message: 'Logged out successfully', type: 'success' },
@@ -58,7 +56,7 @@ const App = () => {
 			const user = await loginService.login(userObject);
 			window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user));
 			blogService.setToken(user.token);
-			setUser(user);
+			dispatch(setUser(user));
 			dispatch(
 				setNotification({ message: 'Login successful', type: 'success' }, 5)
 			);
@@ -72,30 +70,10 @@ const App = () => {
 		}
 	};
 
-	const updateBlog = async (updatedBlog) => {
-		try {
-			const returnedBlog = await blogService.update(
-				updatedBlog.id,
-				updatedBlog
-			);
-			setBlogs(
-				blogs.map((blog) =>
-					blog.id === returnedBlog.id
-						? { ...returnedBlog, user: blog.user || returnedBlog.user }
-						: blog
-				)
-			);
-		} catch (exception) {
-			dispatch(
-				setNotification({ message: 'Failed to update blog', type: 'error' }, 5)
-			);
-		}
-	};
-
 	const addBlog = async (blogObject) => {
 		try {
 			blogFormRef.current.toggleVisibility();
-			dispatch(createBlog(blogObject)); // Dispatch the action to create new blog
+			dispatch(createBlog(blogObject));
 			dispatch(
 				setNotification(
 					{
@@ -112,35 +90,33 @@ const App = () => {
 		}
 	};
 
-	const removeBlog = async (id, title, author) => {
-		const confirmRemove = window.confirm(`Remove blog ${title} by ${author}?`);
-		if (!confirmRemove) return;
+	const likeBlogHandler = (blog) => {
+		dispatch(likeBlog(blog));
+		dispatch(
+			setNotification(
+				{ message: `Liked blog "${blog.title}"`, type: 'success' },
+				5
+			)
+		);
+	};
 
-		try {
-			await blogService.remove(id);
-			setBlogs(blogs.filter((blog) => blog.id !== id));
+	const removeBlogHandler = (id, title, author) => {
+		const confirmRemove = window.confirm(
+			`Remove blog "${title}" by ${author}?`
+		);
+		if (confirmRemove) {
+			dispatch(removeBlog(id));
 			dispatch(
 				setNotification(
 					{ message: `Removed blog "${title}" by ${author}`, type: 'success' },
 					5
 				)
 			);
-		} catch (error) {
-			dispatch(
-				setNotification(
-					{ message: `Failed to remove blog "${title}"`, type: 'error' },
-					5
-				)
-			);
 		}
 	};
 
-	if (user === null) {
-		return (
-			<div>
-				<LoginForm login={loginUser} />
-			</div>
-		);
+	if (!user) {
+		return <LoginForm login={loginUser} />;
 	}
 
 	return (
@@ -148,13 +124,11 @@ const App = () => {
 			<h2>Blogs</h2>
 			<Notification />
 			<p>
-				{user.name} logged in<button onClick={handleLogout}>logout</button>
+				{user.name} logged in <button onClick={handleLogout}>logout</button>
 			</p>
-
 			<Togglable buttonLabel="create new blog" ref={blogFormRef}>
 				<BlogForm createBlog={addBlog} />
 			</Togglable>
-
 			{blogs
 				.slice()
 				.sort((a, b) => b.likes - a.likes)
@@ -162,8 +136,8 @@ const App = () => {
 					<Blog
 						key={blog.id}
 						blog={blog}
-						updateBlog={updateBlog}
-						removeBlog={removeBlog}
+						updateBlog={likeBlogHandler}
+						removeBlog={removeBlogHandler}
 						user={user}
 					/>
 				))}
