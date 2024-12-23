@@ -9,6 +9,7 @@ import {
 } from 'react-router-dom';
 
 import Blog from './components/Blog';
+import BlogDetails from './components/BlogDetails';
 import BlogForm from './components/BlogForm';
 import LoginForm from './components/LoginForm';
 import Notification from './components/Notification';
@@ -168,6 +169,7 @@ const App = () => {
 					/>
 					<Route path="/users" element={<UserList />} />
 					<Route path="/users/:id" element={<User />} />
+					<Route path="/blogs/:id" element={<BlogDetails />} />
 				</Routes>
 			</div>
 		</Router>
