@@ -5,18 +5,17 @@ const userSchema = mongoose.Schema({
 		type: String,
 		required: true,
 		unique: true,
-		minLength: 3
+		minLength: 3,
 	},
 	name: String,
 	passwordHash: String,
 	blogs: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
-			ref: 'Blog'
-		}
+			ref: 'Blog',
+		},
 	],
 })
-
 
 userSchema.set('toJSON', {
 	transform: (document, returnedObejct) => {
@@ -24,7 +23,7 @@ userSchema.set('toJSON', {
 		delete returnedObejct._id
 		delete returnedObejct.__v
 		delete returnedObejct.passwordHash
-	}
+	},
 })
 
 const User = mongoose.model('User', userSchema)

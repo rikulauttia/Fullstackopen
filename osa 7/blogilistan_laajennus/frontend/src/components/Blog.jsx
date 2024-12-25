@@ -7,6 +7,7 @@ import blogService from '../services/blogs';
 
 const Blog = ({ blog, updateBlog, removeBlog, user }) => {
 	const [visible, setVisible] = useState(false);
+	const [comment, setComment] = useState('');
 
 	const toggleVisibility = () => {
 		setVisible(!visible);
@@ -22,6 +23,20 @@ const Blog = ({ blog, updateBlog, removeBlog, user }) => {
 		updateBlog(returnedBlog);
 	};
 
+	const handleAddComment = async (event) => {
+		event.preventDefault();
+		if (comment.trim() === '') {
+			return;
+		}
+		try {
+			const updatedBlog = await blogService.addComment(blog.id, { comment });
+			updateBlog(updatedBlog);
+			setComment('');
+		} catch (error) {
+			console.error('Failed to add comment:', error.message);
+		}
+	};
+
 	const blogStyle = {
 		paddingTop: 10,
 		paddingLeft: 2,
@@ -29,6 +44,7 @@ const Blog = ({ blog, updateBlog, removeBlog, user }) => {
 		borderWidth: 1,
 		marginBottom: 5,
 	};
+
 	return (
 		<div className="blog" style={blogStyle}>
 			<div>
@@ -52,6 +68,21 @@ const Blog = ({ blog, updateBlog, removeBlog, user }) => {
 							remove
 						</button>
 					)}
+					<h4>Comments</h4>
+					<ul>
+						{blog.comments?.map((comment, index) => (
+							<li key={index}>{comment}</li>
+						))}
+					</ul>
+					<form onSubmit={handleAddComment}>
+						<input
+							type="text"
+							value={comment}
+							onChange={({ target }) => setComment(target.value)}
+							placeholder="Write a comment"
+						/>
+						<button type="submit">add comment</button>
+					</form>
 				</div>
 			)}
 		</div>
@@ -64,6 +95,7 @@ Blog.propTypes = {
 		author: PropTypes.string.isRequired,
 		likes: PropTypes.number.isRequired,
 		url: PropTypes.string.isRequired,
+		comments: PropTypes.arrayOf(PropTypes.string),
 	}).isRequired,
 };
 
