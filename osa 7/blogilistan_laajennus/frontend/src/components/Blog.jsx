@@ -1,11 +1,14 @@
 import { useState } from 'react';
 
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 
+import { setNotification } from '../redux/notificationReducer';
 import blogService from '../services/blogs';
 
 const Blog = ({ blog, updateBlog, removeBlog, user }) => {
+	const dispatch = useDispatch();
 	const [visible, setVisible] = useState(false);
 	const [comment, setComment] = useState('');
 
@@ -32,6 +35,12 @@ const Blog = ({ blog, updateBlog, removeBlog, user }) => {
 			const updatedBlog = await blogService.addComment(blog.id, { comment });
 			updateBlog(updatedBlog);
 			setComment('');
+			dispatch(
+				setNotification(
+					{ message: `Comment added to "${blog.title}"`, type: 'success' },
+					5
+				)
+			);
 		} catch (error) {
 			console.error('Failed to add comment:', error.message);
 		}
