@@ -3,10 +3,19 @@ import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
 	BrowserRouter as Router,
-	NavLink,
+	Link as RouterLink,
 	Route,
 	Routes,
 } from 'react-router-dom';
+
+import {
+	AppBar,
+	Box,
+	Button,
+	Container,
+	Toolbar,
+	Typography,
+} from '@mui/material';
 
 import Blog from './components/Blog';
 import BlogDetails from './components/BlogDetails';
@@ -35,13 +44,11 @@ const App = () => {
 
 	const blogFormRef = useRef();
 
-	// Initialize blogs
 	useEffect(() => {
 		dispatch(initializeBlogs());
 		dispatch(initializeUsers());
 	}, [dispatch]);
 
-	// Set logged-in user from localStorage
 	useEffect(() => {
 		const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
 		if (loggedUserJSON) {
@@ -132,46 +139,66 @@ const App = () => {
 
 	return (
 		<Router>
-			<div>
-				<h2>Blogs</h2>
-				<Notification />
-				<p>
-					{user.name} logged in <button onClick={handleLogout}>logout</button>
-				</p>
-				<nav>
-					<NavLink to="/" end>
-						Blogs
-					</NavLink>{' '}
-					| <NavLink to="/users">Users</NavLink>
-				</nav>
-				<Routes>
-					<Route
-						path="/"
-						element={
-							<>
-								<Togglable buttonLabel="create new blog" ref={blogFormRef}>
-									<BlogForm createBlog={addBlog} />
-								</Togglable>
-								{blogs
-									.slice()
-									.sort((a, b) => b.likes - a.likes)
-									.map((blog) => (
-										<Blog
-											key={blog.id}
-											blog={blog}
-											updateBlog={likeBlogHandler}
-											removeBlog={removeBlogHandler}
-											user={user}
-										/>
-									))}
-							</>
-						}
-					/>
-					<Route path="/users" element={<UserList />} />
-					<Route path="/users/:id" element={<User />} />
-					<Route path="/blogs/:id" element={<BlogDetails />} />
-				</Routes>
-			</div>
+			<Box sx={{ flexGrow: 1 }}>
+				<AppBar position="static">
+					<Toolbar>
+						<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+							Blog App
+						</Typography>
+						<Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+							<Button color="inherit" component={RouterLink} to="/">
+								Blogs
+							</Button>
+							<Button color="inherit" component={RouterLink} to="/users">
+								Users
+							</Button>
+							<Typography variant="body1" sx={{ ml: 2 }}>
+								{user.name} logged in
+							</Typography>
+							<Button color="inherit" onClick={handleLogout}>
+								Logout
+							</Button>
+						</Box>
+					</Toolbar>
+				</AppBar>
+
+				<Container maxWidth="lg" sx={{ mt: 4 }}>
+					<Notification />
+
+					<Routes>
+						<Route
+							path="/"
+							element={
+								<Box>
+									<Typography variant="h4" component="h1" gutterBottom>
+										Blogs
+									</Typography>
+									<Togglable buttonLabel="create new blog" ref={blogFormRef}>
+										<BlogForm createBlog={addBlog} />
+									</Togglable>
+									<Box sx={{ mt: 3 }}>
+										{blogs
+											.slice()
+											.sort((a, b) => b.likes - a.likes)
+											.map((blog) => (
+												<Blog
+													key={blog.id}
+													blog={blog}
+													updateBlog={likeBlogHandler}
+													removeBlog={removeBlogHandler}
+													user={user}
+												/>
+											))}
+									</Box>
+								</Box>
+							}
+						/>
+						<Route path="/users" element={<UserList />} />
+						<Route path="/users/:id" element={<User />} />
+						<Route path="/blogs/:id" element={<BlogDetails />} />
+					</Routes>
+				</Container>
+			</Box>
 		</Router>
 	);
 };
