@@ -59,7 +59,23 @@ const resolvers = {
   Query: {
     bookCount: async () => Book.countDocuments(),
     authorCount: async () => Author.countDocuments(),
-    allBooks: async () => Book.find({}).populate("author"),
+    allBooks: async (root, args) => {
+      const query = {};
+      if (args.author) {
+        const author = await Author.findOne({ name: args.author });
+        if (author) {
+          query.author = author._id;
+        } else {
+          return []; // No books if the author doesn't exist
+        }
+      }
+
+      if (args.genre) {
+        query.genres = args.genre;
+      }
+
+      return Book.find(query).populate("author");
+    },
     allAuthors: async () => Author.find({}),
   },
   Mutation: {
