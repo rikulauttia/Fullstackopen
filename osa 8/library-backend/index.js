@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const { ApolloServer } = require("@apollo/server");
 const { startStandaloneServer } = require("@apollo/server/standalone");
-const { v4: uuidv4 } = require("uuid");
+const { GraphQLError } = require("graphql");
 
 const Author = require("./models/author");
 const Book = require("./models/book");
@@ -80,10 +80,41 @@ const resolvers = {
   },
   Mutation: {
     addBook: async (root, args) => {
+      if (args.title.length < 5) {
+        throw new GraphQLError("Title must be at least 5 characters long", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.title,
+          },
+        });
+      }
+
+      if (args.author.length < 4) {
+        throw new GraphQLError(
+          "Author name must be at least 4 characters long",
+          {
+            extensions: {
+              code: "BAD_USER_INPUT",
+              invalidArgs: args.author,
+            },
+          }
+        );
+      }
+
       let author = await Author.findOne({ name: args.author });
       if (!author) {
         author = new Author({ name: args.author });
-        await author.save();
+        try {
+          await author.save();
+        } catch (error) {
+          throw new GraphQLError("Saving author failed", {
+            extensions: {
+              code: "BAD_USER_INPUT",
+              invalidArgs: args.author,
+              error,
+            },
+          });
+        }
       }
 
       const book = new Book({
@@ -93,16 +124,45 @@ const resolvers = {
         genres: args.genres,
       });
 
+      try {
+        await book.save();
+      } catch (error) {
+        throw new GraphQLError("Saving book failed", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.title,
+            error,
+          },
+        });
+      }
       const savedBook = await book.save();
       return savedBook.populate("author");
     },
     editAuthor: async (root, args) => {
       const author = await Author.findOne({ name: args.name });
       if (!author) {
-        return null;
+        throw new GraphQLError("Author not found", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.name,
+          },
+        });
       }
+
       author.born = args.setBornTo;
-      return author.save();
+
+      try {
+        await author.save();
+      } catch (error) {
+        throw new GraphQLError("Saving author failed", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.name,
+            error,
+          },
+        });
+      }
+      return author;
     },
   },
 };
