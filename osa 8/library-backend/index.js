@@ -54,6 +54,7 @@ const typeDefs = `
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
     me: User
+    recommendations: [Book!]!
   }
 
   type Mutation {
@@ -80,6 +81,15 @@ const typeDefs = `
 
 const resolvers = {
   Query: {
+    recommendations: async (root, args, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError("Not authenticated", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
+      const favoriteGenre = context.currentUser.favoriteGenre;
+      return Book.find({ genres: favoriteGenre }).populate("author");
+    },
     authorCount: async () => Author.countDocuments(),
     allBooks: async (root, args) => {
       const query = {};
