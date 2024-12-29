@@ -101,11 +101,9 @@ const resolvers = {
           return []; // No books if the author doesn't exist
         }
       }
-
       if (args.genre) {
         query.genres = args.genre;
       }
-
       return Book.find(query).populate("author");
     },
     allAuthors: async () => Author.find({}),

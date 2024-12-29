@@ -21,12 +21,15 @@ const ADD_BOOK = gql`
       author {
         name
       }
+      published
+      genres
     }
   }
 `;
+
 const ALL_BOOKS = gql`
-  query {
-    allBooks {
+  query AllBooks($genre: String) {
+    allBooks(genre: $genre) {
       title
       author {
         name
@@ -36,17 +39,15 @@ const ALL_BOOKS = gql`
   }
 `;
 
-const ALL_AUTHORS = gql`
+const GENRES_QUERY = gql`
   query {
-    allAuthors {
-      name
-      born
-      bookCount
+    allBooks {
+      genres
     }
   }
 `;
 
-const NewBook = (props) => {
+const NewBook = ({ show }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [published, setPublished] = useState("");
@@ -54,12 +55,37 @@ const NewBook = (props) => {
   const [genres, setGenres] = useState([]);
 
   const [addBook, { loading, error }] = useMutation(ADD_BOOK, {
-    refetchQueries: [{ query: ALL_AUTHORS }, { query: ALL_BOOKS }], // with this we're ensuring updated data
+    refetchQueries: [
+      { query: ALL_BOOKS, variables: { genre: null } }, // Refetch all books for "all genres"
+      { query: GENRES_QUERY }, // Refetch genres to update the genre buttons
+    ],
+    update: (cache, { data: { addBook } }) => {
+      // Update the books cache
+      cache.updateQuery(
+        { query: ALL_BOOKS, variables: { genre: null } },
+        (data) => {
+          const existingBooks = data?.allBooks || [];
+          return {
+            allBooks: [...existingBooks, addBook],
+          };
+        }
+      );
+
+      // Update the genres cache
+      cache.updateQuery({ query: GENRES_QUERY }, (data) => {
+        const existingGenres =
+          data?.allBooks.flatMap((book) => book.genres) || [];
+        const updatedGenres = Array.from(
+          new Set([...existingGenres, ...addBook.genres])
+        );
+        return {
+          allBooks: updatedGenres.map((genre) => ({ genres: [genre] })),
+        };
+      });
+    },
   });
 
-  if (!props.show) {
-    return null;
-  }
+  if (!show) return null;
 
   const submit = async (event) => {
     event.preventDefault();
@@ -68,18 +94,18 @@ const NewBook = (props) => {
       variables: { title, author, published: parseInt(published), genres },
     });
 
-    console.log("add book...");
-
     setTitle("");
-    setPublished("");
     setAuthor("");
+    setPublished("");
     setGenres([]);
     setGenre("");
   };
 
   const addGenre = () => {
-    setGenres(genres.concat(genre));
-    setGenre("");
+    if (genre.trim() && !genres.includes(genre)) {
+      setGenres([...genres, genre]);
+      setGenre("");
+    }
   };
 
   if (loading) return <div>Adding book...</div>;
@@ -119,7 +145,7 @@ const NewBook = (props) => {
             add genre
           </button>
         </div>
-        <div>genres: {genres.join(" ")}</div>
+        <div>genres: {genres.join(", ")}</div>
         <button type="submit">create book</button>
       </form>
     </div>
