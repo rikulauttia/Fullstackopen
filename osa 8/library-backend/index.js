@@ -80,7 +80,6 @@ const typeDefs = `
 
 const resolvers = {
   Query: {
-    bookCount: async () => Book.countDocuments(),
     authorCount: async () => Author.countDocuments(),
     allBooks: async (root, args) => {
       const query = {};
@@ -101,6 +100,12 @@ const resolvers = {
     },
     allAuthors: async () => Author.find({}),
     me: (root, args, context) => context.currentUser,
+  },
+  Author: {
+    bookCount: async (root) => {
+      const count = await Book.countDocuments({ author: root._id });
+      return count;
+    },
   },
   Mutation: {
     createUser: async (root, args) => {

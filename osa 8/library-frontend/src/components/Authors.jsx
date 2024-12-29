@@ -23,7 +23,7 @@ const EDIT_AUTHOR = gql`
   }
 `;
 
-const Authors = (props) => {
+const Authors = ({ show, token }) => {
   const { loading, error, data } = useQuery(ALL_AUTHORS);
   const [editAuthor] = useMutation(EDIT_AUTHOR, {
     refetchQueries: [{ query: ALL_AUTHORS }],
@@ -32,7 +32,7 @@ const Authors = (props) => {
   const [name, setName] = useState("");
   const [born, setBorn] = useState("");
 
-  if (!props.show) {
+  if (!show) {
     return null;
   }
   if (loading) {
@@ -69,35 +69,43 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
-      <h3>Set birtyear</h3>
-      <form onSubmit={submit}>
-        <div>
-          name
-          <select value={name} onChange={({ target }) => setName(target.value)}>
-            <option value="">Select author</option>
-            {authors.map((a) => (
-              <option key={a.name} value={a.name}>
-                {a.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          born
-          <input
-            type="number"
-            value={born}
-            onChange={({ target }) => setBorn(target.value)}
-          />
-        </div>
-        <button type="submit">Update author</button>
-      </form>
+      {token && (
+        <>
+          <h3>Set birth year</h3>
+          <form onSubmit={submit}>
+            <div>
+              name
+              <select
+                value={name}
+                onChange={({ target }) => setName(target.value)}
+              >
+                <option value="">Select author</option>
+                {authors.map((a) => (
+                  <option key={a.name} value={a.name}>
+                    {a.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              born
+              <input
+                type="number"
+                value={born}
+                onChange={({ target }) => setBorn(target.value)}
+              />
+            </div>
+            <button type="submit">Update author</button>
+          </form>
+        </>
+      )}
     </div>
   );
 };
 
 Authors.propTypes = {
   show: PropTypes.bool.isRequired,
+  token: PropTypes.string,
 };
 
 export default Authors;
