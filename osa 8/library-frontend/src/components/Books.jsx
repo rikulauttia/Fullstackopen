@@ -1,23 +1,29 @@
+import { useState } from "react";
+
 import PropTypes from "prop-types";
 
 import { gql, useQuery } from "@apollo/client";
 
 const ALL_BOOKS = gql`
-  query {
-    allBooks {
+  query AllBooks($genre: String) {
+    allBooks(genre: $genre) {
       title
       author {
         name
       }
       published
+      genres
     }
   }
 `;
 
-const Books = (props) => {
-  const { loading, error, data } = useQuery(ALL_BOOKS);
+const Books = ({ show }) => {
+  const [selectedGenre, setSelectedGenre] = useState(null);
+  const { loading, error, data } = useQuery(ALL_BOOKS, {
+    variables: { genre: selectedGenre },
+  });
 
-  if (!props.show) {
+  if (!show) {
     return null;
   }
 
@@ -30,10 +36,18 @@ const Books = (props) => {
   }
 
   const books = data.allBooks;
+  const genres = Array.from(new Set(books.flatMap((book) => book.genres)));
 
   return (
     <div>
       <h2>Books</h2>
+      {selectedGenre ? (
+        <p>
+          in genre <b>{selectedGenre}</b>
+        </p>
+      ) : (
+        <p>all genres</p>
+      )}
       <table>
         <tbody>
           <tr>
@@ -50,6 +64,31 @@ const Books = (props) => {
           ))}
         </tbody>
       </table>
+      <div>
+        {genres.map((genre) => (
+          <button
+            key={genre}
+            onClick={() => setSelectedGenre(genre)}
+            style={{
+              margin: "5px",
+              padding: "5px",
+              cursor: "pointer",
+            }}
+          >
+            {genre}
+          </button>
+        ))}
+        <button
+          onClick={() => setSelectedGenre(null)}
+          style={{
+            margin: "5px",
+            padding: "5px",
+            cursor: "pointer",
+          }}
+        >
+          all genres
+        </button>
+      </div>
     </div>
   );
 };
