@@ -1,10 +1,25 @@
 import { useState } from "react";
 
+import { gql, useSubscription } from "@apollo/client";
+
 import Authors from "./components/Authors";
 import Books from "./components/Books";
 import Login from "./components/Login";
 import NewBook from "./components/NewBook";
 import Recommendations from "./components/Recommendations";
+
+const BOOK_ADDED = gql`
+  subscription {
+    bookAdded {
+      title
+      author {
+        name
+      }
+      published
+      genres
+    }
+  }
+`;
 
 const App = () => {
   const [page, setPage] = useState("authors");
@@ -17,6 +32,15 @@ const App = () => {
     localStorage.removeItem("library-user-token");
     setPage("login");
   };
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      const addedBook = data.data.bookAdded;
+      window.alert(
+        `New book added: ${addedBook.title} by ${addedBook.author.name}`
+      );
+    },
+  });
 
   return (
     <div>
