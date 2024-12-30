@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { gql, useSubscription } from "@apollo/client";
+import { gql, useApolloClient, useSubscription } from "@apollo/client";
 
 import Authors from "./components/Authors";
 import Books from "./components/Books";
@@ -21,16 +21,53 @@ const BOOK_ADDED = gql`
   }
 `;
 
+const ALL_BOOKS = gql`
+  query AllBooks($genre: String) {
+    allBooks(genre: $genre) {
+      title
+      author {
+        name
+      }
+      published
+    }
+  }
+`;
+
 const App = () => {
   const [page, setPage] = useState("authors");
   const [token, setToken] = useState(
     localStorage.getItem("library-user-token")
   );
 
+  const client = useApolloClient();
+
   const logout = () => {
     setToken(null);
     localStorage.removeItem("library-user-token");
     setPage("login");
+  };
+
+  const updateCacheWith = (addedBook) => {
+    const dataInCache = client.readQuery({
+      query: ALL_BOOKS,
+      variables: { genre: null },
+    });
+
+    if (!dataInCache) return;
+
+    const alreadyExists = dataInCache.allBooks.some(
+      (book) => book.title === addedBook.title
+    );
+
+    if (!alreadyExists) {
+      client.writeQuery({
+        query: ALL_BOOKS,
+        variables: { genre: null },
+        data: {
+          allBooks: dataInCache.allBooks.concat(addedBook),
+        },
+      });
+    }
   };
 
   useSubscription(BOOK_ADDED, {
@@ -39,6 +76,7 @@ const App = () => {
       window.alert(
         `New book added: ${addedBook.title} by ${addedBook.author.name}`
       );
+      updateCacheWith(addedBook);
     },
   });
 
