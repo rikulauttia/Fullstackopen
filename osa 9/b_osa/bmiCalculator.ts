@@ -1,13 +1,17 @@
-type Operation = "multiply" | "add" | "divide";
-type Result = string | number;
+const calculateBmi = (height: number, weight: number): string => {
+  const heightInMeters = height / 100; // koska pituus annetaan cm
+  const bmi = weight / (heightInMeters * heightInMeters);
 
-const calculator = (a: number, b: number, op: Operation): Result => {
-  if (op === "multiply") {
-    return a * b;
-  } else if (op === "add") {
-    return a + b;
-  } else if (op === "divide") {
-    if (b === 0) return "can't divide by 0!";
-    return a / b;
+  // BMI categories
+  if (bmi < 18.5) {
+    return "Underwight";
+  } else if (bmi >= 18.5 && bmi <= 24.9) {
+    return "Normal range";
+  } else if (bmi >= 25 && bmi <= 29.9) {
+    return "Overweight";
+  } else {
+    return "Obese";
   }
 };
+
+console.log(calculateBmi(180, 74));
