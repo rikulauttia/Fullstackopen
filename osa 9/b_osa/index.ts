@@ -10,24 +10,17 @@ app.get("/hello", (_req, res) => {
 });
 
 app.get("/bmi", (req, res) => {
-  const { height, weight } = req.query;
-
-  if (!height || !weight || isNaN(Number(height)) || isNaN(Number(weight))) {
-    return res.status(400).json({ error: "malformatted parameters" });
-  }
-
-  const heightNumber = Number(height);
-  const weightNumber = Number(weight);
-
-  if (heightNumber <= 0 || weightNumber <= 0) {
-    return res.status(400).json({ error: "malformatted parameters" });
-  }
-
-  const bmi = calculateBmi(heightNumber, weightNumber);
-  return res.json({
-    weight: weightNumber,
-    height: heightNumber,
-    bmi,
+  if (!req.query.height || !req.query.weight)
+    res.status(404).json({ error: "malformatted parameters" });
+  const height = Number(req.query.height);
+  const weight = Number(req.query.weight);
+  if (isNaN(height) || isNaN(weight))
+    res.status(404).json({ error: "malformatted parameters" });
+  const bmiDecision: string = calculateBmi(height, weight);
+  res.json({
+    weight: weight,
+    height: height,
+    bmi: bmiDecision,
   });
 });
 
