@@ -12,6 +12,17 @@ const calculateExercises = (
   dailyHours: number[],
   target: number
 ): ExerciseResult => {
+  if (
+    !Array.isArray(dailyHours) ||
+    dailyHours.some((h) => typeof h !== "number" || h < 0)
+  ) {
+    throw new Error(
+      "Invalid daily hours array. Must be an array of non-negative numbers."
+    );
+  }
+  if (typeof target !== "number" || target <= 0) {
+    throw new Error("Invalid target. Must be a positive number.");
+  }
   const periodLength = dailyHours.length;
   const trainingDays = dailyHours.filter((day) => day > 0).length;
   const totalHours = dailyHours.reduce((sum, hours) => sum + hours, 0);
@@ -44,4 +55,26 @@ const calculateExercises = (
   };
 };
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
+// Command-line integration
+if (require.main === module) {
+  const args = process.argv.slice(2);
+
+  if (args.length < 2) {
+    console.log("calculateExercises <target> <daily hours...>");
+    process.exit(1);
+  }
+
+  const target = Number(args[0]);
+  const dailyHours = args.slice(1).map(Number);
+
+  if (isNaN(target) || dailyHours.some((h) => isNaN(h))) {
+    console.log("Error: Target and all daily hours must be valid numbers.");
+    process.exit(1);
+  }
+
+  try {
+    console.log(calculateExercises(dailyHours, target));
+  } catch (error) {
+    console.error("Error:", error.message);
+  }
+}
