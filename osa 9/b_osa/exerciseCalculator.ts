@@ -74,7 +74,11 @@ if (require.main === module) {
 
   try {
     console.log(calculateExercises(dailyHours, target));
-  } catch (error) {
-    console.error("Error:", error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error:", error.message);
+    } else {
+      console.error("Unknown error occurred");
+    }
   }
 }
