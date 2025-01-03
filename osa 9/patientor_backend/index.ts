@@ -7,7 +7,7 @@ const PORT = 3000;
 
 app.get("/api/ping", (_req, res) => {
   console.log("ping");
-  res.send("pong");
+  res.send("ping");
 });
 
 app.listen(PORT, () => {
