@@ -60,7 +60,7 @@ const isGender = (param: string): param is Gender => {
 
 const parseGender = (gender: unknown): Gender => {
   if (!isString(gender) || !isGender(gender)) {
-    throw new Error("Incorrect gender: " + gender);
+    throw new Error("Error! Incorrect gender: " + gender);
   }
 
   return gender;
