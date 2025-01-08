@@ -15,7 +15,7 @@ router.post("/", (req, res) => {
     const addedPatient = patientService.addPatient(newPatient);
     res.send(addedPatient);
   } catch (error: unknown) {
-    let errorMessage: string = "Something went wrong.";
+    let errorMessage: string = "Something went wrong!";
     if (error instanceof Error) {
       errorMessage += " Error: " + error.message;
     }
