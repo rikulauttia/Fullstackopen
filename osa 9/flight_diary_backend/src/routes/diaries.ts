@@ -21,7 +21,9 @@ router.get("/:id", (req, res) => {
 
 router.post("/", (req, res) => {
   try {
+    console.log("Incoming data:", req.body);
     const newDiaryEntry = toNewDiaryEntry(req.body);
+    console.log("Transformed data:", newDiaryEntry);
     const addedEntry = diaryService.addDiary(newDiaryEntry);
     res.json(addedEntry);
   } catch (error: unknown) {

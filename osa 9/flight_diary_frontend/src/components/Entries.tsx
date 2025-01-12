@@ -14,6 +14,7 @@ const Entries = ({ entries }: EntriesTypes) => {
             <h3>{entry.date}</h3>
             <p>visibility: {entry.visibility}</p>
             <p>weather: {entry.weather}</p>
+            <p>comment: {entry.comment}</p>
             <br></br>
           </div>
         );
