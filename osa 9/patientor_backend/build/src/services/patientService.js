@@ -7,22 +7,25 @@ const uuid_1 = require("uuid");
 const patients_1 = __importDefault(require("../../data/patients"));
 const patients = patients_1.default;
 const getNonSensitivePatient = () => {
-    return patients.map(({ id, name, dateOfBirth, gender, occupation }) => ({
+    return patients.map(({ id, name, dateOfBirth, gender, occupation, entries }) => ({
         id,
         name,
         dateOfBirth,
         gender,
         occupation,
+        entries,
     }));
 };
 const addPatient = (details) => {
-    const newPatient = Object.assign({ 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-        id: (0, uuid_1.v1)() }, details);
+    const newPatient = Object.assign({ id: (0, uuid_1.v1)() }, details);
     patients_1.default.push(newPatient);
     return newPatient;
+};
+const findPatientById = (id) => {
+    return patients.find((patient) => patient.id === id);
 };
 exports.default = {
     getNonSensitivePatient,
     addPatient,
+    findPatientById,
 };

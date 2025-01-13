@@ -10,6 +10,15 @@ const router = express_1.default.Router();
 router.get("/", (_req, res) => {
     res.send(patientService_1.default.getNonSensitivePatient());
 });
+router.get("/:id", (req, res) => {
+    const patient = patientService_1.default.findPatientById(req.params.id);
+    if (patient) {
+        res.send(patient);
+    }
+    else {
+        res.status(404).send({ error: "Patient not found!" });
+    }
+});
 router.post("/", (req, res) => {
     try {
         const newPatient = (0, toNewPatient_1.default)(req.body);
@@ -17,7 +26,7 @@ router.post("/", (req, res) => {
         res.send(addedPatient);
     }
     catch (error) {
-        let errorMessage = "Something went wrong.";
+        let errorMessage = "Something went wrong!";
         if (error instanceof Error) {
             errorMessage += " Error: " + error.message;
         }

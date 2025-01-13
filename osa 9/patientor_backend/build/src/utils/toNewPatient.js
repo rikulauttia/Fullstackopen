@@ -1,60 +1,29 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const zod_1 = require("zod");
 const types_1 = require("../types");
-const toHelpTypes_1 = require("./toHelpTypes");
+const newPatientSchema = zod_1.z.object({
+    name: zod_1.z.string().min(1, "Name is required"),
+    dateOfBirth: zod_1.z.string().refine((date) => !isNaN(Date.parse(date)), {
+        message: "Invalid date format",
+    }),
+    ssn: zod_1.z.string().min(1, "SSN is required"),
+    gender: zod_1.z.nativeEnum(types_1.Gender, {
+        errorMap: () => ({ message: "Invalid gender" }),
+    }),
+    occupation: zod_1.z.string().min(1, "Occupation is required"),
+});
 const toNewPatient = (object) => {
-    if (!object || typeof object !== "object") {
-        throw new Error("Incorrect or missing data");
+    try {
+        // Validate and parse the input object
+        const parsedPatient = newPatientSchema.parse(object);
+        return parsedPatient; // Cast to NewPatient type (safe because of Zod validation)
     }
-    if ("name" in object &&
-        "dateOfBirth" in object &&
-        "ssn" in object &&
-        "gender" in object &&
-        "occupation" in object) {
-        const newPatient = {
-            name: parseName(object.name),
-            dateOfBirth: parseDateOfBirth(object.dateOfBirth),
-            ssn: parseSsn(object.ssn),
-            gender: parseGender(object.gender),
-            occupation: parseOccupation(object.occupation),
-        };
-        return newPatient;
+    catch (error) {
+        if (error instanceof zod_1.z.ZodError) {
+            throw new Error(`Validation error: ${error.errors.map((e) => e.message).join(", ")}`);
+        }
+        throw error; // Rethrow other errors
     }
-    throw new Error("Incorrect data: some fields are missing");
 };
 exports.default = toNewPatient;
-const parseName = (name) => {
-    if (!(0, toHelpTypes_1.isString)(name)) {
-        throw new Error("Incorrect name");
-    }
-    return name;
-};
-const parseDateOfBirth = (dateOfBirth) => {
-    if (!(0, toHelpTypes_1.isString)(dateOfBirth) || !(0, toHelpTypes_1.isDate)(dateOfBirth)) {
-        throw new Error("Incorrect date: " + dateOfBirth);
-    }
-    return dateOfBirth;
-};
-const parseSsn = (ssn) => {
-    if (!(0, toHelpTypes_1.isString)(ssn)) {
-        throw new Error("Incorrect ssn: " + ssn);
-    }
-    return ssn;
-};
-const isGender = (param) => {
-    return Object.values(types_1.Gender)
-        .map((v) => v.toString())
-        .includes(param);
-};
-const parseGender = (gender) => {
-    if (!(0, toHelpTypes_1.isString)(gender) || !isGender(gender)) {
-        throw new Error("Incorrect gender: " + gender);
-    }
-    return gender;
-};
-const parseOccupation = (occupation) => {
-    if (!(0, toHelpTypes_1.isString)(occupation)) {
-        throw new Error("Incorrect occupation: " + occupation);
-    }
-    return occupation;
-};
