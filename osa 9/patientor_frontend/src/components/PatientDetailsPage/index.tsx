@@ -40,7 +40,12 @@ const PatientDetailsPage: React.FC = () => {
     return (
       <ul>
         {codes.map((code) => {
-          return <li key={code}>{code}</li>;
+          const diagnosis = diagnoses.find((d) => d.code === code);
+          return (
+            <li key={code}>
+              {code} {diagnosis ? `${diagnosis.name}` : ""}
+            </li>
+          );
         })}
       </ul>
     );
