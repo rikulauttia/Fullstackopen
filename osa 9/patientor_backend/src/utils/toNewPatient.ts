@@ -18,7 +18,7 @@ const toNewPatient = (object: unknown): NewPatient => {
   try {
     // Validate and parse the input object
     const parsedPatient = newPatientSchema.parse(object);
-    return parsedPatient as NewPatient; // Cast to NewPatient type (safe because of Zod validation)
+    return parsedPatient as NewPatient;
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw new Error(

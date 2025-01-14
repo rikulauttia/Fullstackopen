@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const patientService_1 = __importDefault(require("../services/patientService"));
+const toNewEntry_1 = __importDefault(require("../utils/toNewEntry"));
 const toNewPatient_1 = __importDefault(require("../utils/toNewPatient"));
 const router = express_1.default.Router();
 router.get("/", (_req, res) => {
@@ -24,6 +25,21 @@ router.post("/", (req, res) => {
         const newPatient = (0, toNewPatient_1.default)(req.body);
         const addedPatient = patientService_1.default.addPatient(newPatient);
         res.send(addedPatient);
+    }
+    catch (error) {
+        let errorMessage = "Something went wrong!";
+        if (error instanceof Error) {
+            errorMessage += " Error: " + error.message;
+        }
+        res.status(400).send(errorMessage);
+    }
+});
+router.post("/:id/entries", (req, res) => {
+    try {
+        const patientId = req.params.id;
+        const newEntry = (0, toNewEntry_1.default)(req.body);
+        const updatedPatient = patientService_1.default.addEntry(patientId, newEntry);
+        res.json(updatedPatient);
     }
     catch (error) {
         let errorMessage = "Something went wrong!";
