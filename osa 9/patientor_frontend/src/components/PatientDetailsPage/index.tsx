@@ -6,6 +6,7 @@ import { Female, Male, Transgender } from "@mui/icons-material";
 
 import patientService from "../../services/patients";
 import { Diagnosis, Entry, Patient } from "../../types";
+import EntryDetails from "../EntryDetails";
 
 const PatientDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -32,25 +33,6 @@ const PatientDetailsPage: React.FC = () => {
     return <p>Loading...</p>;
   }
 
-  const renderDiagnoses = (codes?: Array<string>) => {
-    if (!codes || !diagnoses) {
-      return null;
-    }
-
-    return (
-      <ul>
-        {codes.map((code) => {
-          const diagnosis = diagnoses.find((d) => d.code === code);
-          return (
-            <li key={code}>
-              {code} {diagnosis ? `${diagnosis.name}` : ""}
-            </li>
-          );
-        })}
-      </ul>
-    );
-  };
-
   const genderIcon = () => {
     switch (patient.gender) {
       case "male":
@@ -72,12 +54,7 @@ const PatientDetailsPage: React.FC = () => {
       <p>date of birth: {patient.dateOfBirth}</p>
       <h3>Entries</h3>
       {patient.entries.map((entry: Entry) => (
-        <div key={entry.id} style={{ marginBottom: "1em" }}>
-          <p>
-            {entry.date} {entry.description}
-          </p>
-          {renderDiagnoses(entry.diagnosisCodes)}
-        </div>
+        <EntryDetails key={entry.id} entry={entry}></EntryDetails>
       ))}
     </div>
   );
