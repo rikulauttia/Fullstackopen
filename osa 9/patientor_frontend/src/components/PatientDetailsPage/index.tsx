@@ -5,11 +5,12 @@ import { useParams } from "react-router-dom";
 import { Female, Male, Transgender } from "@mui/icons-material";
 
 import patientService from "../../services/patients";
-import { Patient } from "../../types";
+import { Diagnosis, Entry, Patient } from "../../types";
 
 const PatientDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [patient, setPatient] = useState<Patient | null>(null);
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
 
   useEffect(() => {
     const fetchPatient = async () => {
@@ -18,12 +19,32 @@ const PatientDetailsPage: React.FC = () => {
         setPatient(patientData);
       }
     };
+
+    const fetchDiagnoses = async () => {
+      const diagnosesData = await patientService.getDiagnoses();
+      setDiagnoses(diagnosesData);
+    };
     fetchPatient();
+    fetchDiagnoses();
   }, [id]);
 
   if (!patient) {
     return <p>Loading...</p>;
   }
+
+  const renderDiagnoses = (codes?: Array<string>) => {
+    if (!codes || !diagnoses) {
+      return null;
+    }
+
+    return (
+      <ul>
+        {codes.map((code) => {
+          return <li key={code}>{code}</li>;
+        })}
+      </ul>
+    );
+  };
 
   const genderIcon = () => {
     switch (patient.gender) {
@@ -44,6 +65,15 @@ const PatientDetailsPage: React.FC = () => {
       <p>ssn: {patient.ssn}</p>
       <p>occupation: {patient.occupation}</p>
       <p>date of birth: {patient.dateOfBirth}</p>
+      <h3>Entries</h3>
+      {patient.entries.map((entry: Entry) => (
+        <div key={entry.id} style={{ marginBottom: "1em" }}>
+          <p>
+            {entry.date} {entry.description}
+          </p>
+          {renderDiagnoses(entry.diagnosisCodes)}
+        </div>
+      ))}
     </div>
   );
 };
