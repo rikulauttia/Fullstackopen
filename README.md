@@ -54,13 +54,23 @@ To run these projects locally, you will need:
    ```bash
    npm install
 
-5. Start the development server:
+5. Start the development server or application:
+   For most projects:
    ```bash
    npm start
 
+  If npm start doesn't work, you may need to run the development server:
+  ```bash
+  npm run dev
+```
 
 #### Running Tests
 
 For projects with tests, you can run them using:
 ```bash
 npm test
+```
+
+#### Running Tests
+Always check the README.md or package.json in individual projects for any specific instructions or dependencies.
+Ensure that the required Node.js version matches the project's engines field in package.json (if specified).
