@@ -62,7 +62,7 @@ To run these projects locally, you will need:
   If npm start doesn't work, you may need to run the development server:
   ```bash
   npm run dev
-```
+  ```
 
 #### Running Tests
 
