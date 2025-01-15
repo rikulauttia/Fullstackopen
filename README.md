@@ -44,11 +44,17 @@ To run these projects locally, you will need:
    ```bash
    cd <project-folder>
 
-3. Install project dependencies:
+3. Check package.json for available scripts:
+   Before proceeding, review the scripts section of package.json. Some projects may require building the project first:
+   ```bash
+   npm run build
+
+
+4. Install project dependencies:
    ```bash
    npm install
 
-4. Start the development server:
+5. Start the development server:
    ```bash
    npm start
 
