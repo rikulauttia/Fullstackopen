@@ -22,7 +22,7 @@ const hospitalEntrySchema = baseEntrySchema.extend({
   type: z.literal("Hospital"),
   discharge: z.object({
     date: z.string().refine((date) => !isNaN(Date.parse(date)), {
-      message: "Invalid discharge date format",
+      message: "Invalid discharge date format!",
     }),
     criteria: z.string().min(1, "Discharge criteria is required"),
   }),
