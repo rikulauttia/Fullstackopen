@@ -1,3 +1,10 @@
+export type HealthCheckFormValues = Omit<HealthCheckEntry, "id">;
+export type OccupationalHealthcareFormValues = Omit<
+  OccupationalHealthcareEntry,
+  "id"
+>;
+export type HospitalFormValues = Omit<HospitalEntry, "id">;
+
 export interface Diagnosis {
   code: string;
   name: string;
